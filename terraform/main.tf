@@ -29,9 +29,16 @@ provider "aws" {
   region = var.region
 }
 
+locals {
+  cluster_endpoint = try(module.eks.cluster_endpoint, "")
+  cluster_ca       = try(module.eks.cluster_certificate_authority_data, "")
+  k8s_host         = local.cluster_endpoint != "" ? local.cluster_endpoint : "https://localhost:6443"
+  k8s_ca           = local.cluster_ca != "" ? base64decode(local.cluster_ca) : ""
+}
+
 provider "kubernetes" {
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  host                   = local.k8s_host
+  cluster_ca_certificate = local.k8s_ca
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
@@ -41,8 +48,8 @@ provider "kubernetes" {
 
 provider "helm" {
   kubernetes = {
-    host                   = module.eks.cluster_endpoint
-    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+    host                   = local.k8s_host
+    cluster_ca_certificate = local.k8s_ca
     exec = {
       api_version = "client.authentication.k8s.io/v1beta1"
       command     = "aws"

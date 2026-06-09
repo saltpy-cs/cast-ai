@@ -13,12 +13,14 @@ variable "cluster_name" {
 variable "allowed_cidrs" {
   description = "CIDRs allowed to reach the EKS public API endpoint"
   type        = list(string)
+  default     = ["0.0.0.0/0"]
 }
 
 variable "castai_api_token" {
   description = "CAST.ai API token"
   type        = string
   sensitive   = true
+  default     = ""
 }
 
 variable "tags" {
