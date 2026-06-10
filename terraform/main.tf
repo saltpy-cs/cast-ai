@@ -124,7 +124,7 @@ module "eks" {
   version = "~> 21.0"
 
   name               = var.cluster_name
-  kubernetes_version = "1.30"
+  kubernetes_version = "1.35"
 
   endpoint_public_access       = true
   endpoint_public_access_cidrs = var.allowed_cidrs
